@@ -35,6 +35,6 @@ services.AddDbContext<ApplicationDbContext>(o => o.UseSqlServer(connectionString
 ```
 
 ## OpenIddict Setup (Token-Based Authentication): 
-<pre>
-	Go To [openiddict-core] (https://github.com/openiddict/openiddict-core)
-</pre>
+
+- Go To [openiddict-core] (https://github.com/openiddict/openiddict-core)
+
