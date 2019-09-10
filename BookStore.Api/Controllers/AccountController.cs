@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AspNet.Security.OpenIdConnect.Extensions;
 using AspNet.Security.OpenIdConnect.Primitives;
@@ -34,7 +35,7 @@ namespace BookStore.Api.Controllers
             _userManager = userManager;
         }
 
-        [HttpPost("~/connect/token"), Produces("application/json")]
+        [HttpPost("~/api/connect/token"), Produces("application/json")]
         public async Task<IActionResult> Exchange([ModelBinder(typeof(OpenIddictMvcBinder))] OpenIdConnectRequest request)
         {
             if (request.IsPasswordGrantType())
@@ -59,9 +60,9 @@ namespace BookStore.Api.Controllers
                         ErrorDescription = "The username/password couple is invalid."
                     });
                 }
-
+                var roles = await _userManager.GetRolesAsync(user);
                 // Create a new authentication ticket.
-                var ticket = await CreateTicketAsync(request, user);
+                var ticket = await CreateTicketAsync(request, user,null,roles.ToArray());
 
                 return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
             }
@@ -111,11 +112,16 @@ namespace BookStore.Api.Controllers
 
         private async Task<AuthenticationTicket> CreateTicketAsync(
             OpenIdConnectRequest oidcRequest, ApplicationUser user,
-            AuthenticationProperties properties = null)
+            AuthenticationProperties properties = null, string[] roles = null)
         {
             // Create a new ClaimsPrincipal containing the claims that
             // will be used to create an id_token, a token or a code.
             var principal = await _signInManager.CreateUserPrincipalAsync(user);
+
+            if (roles != null)
+            {
+                AddRolesToPrincipal(principal, roles, user);
+            }
 
             // Create a new authentication ticket holding the user identity.
             var ticket = new AuthenticationTicket(principal, properties,
@@ -168,6 +174,30 @@ namespace BookStore.Api.Controllers
             }
 
             return ticket;
+        }
+
+
+        private void AddRolesToPrincipal(ClaimsPrincipal principal, string[] roles, ApplicationUser user)
+        {
+            var identity = principal.Identity as ClaimsIdentity;
+
+            
+            if (roles.Any())
+            {
+                var roleClaim = identity.Claims.Where(c => c.Type == "role").ToList();
+                if (roleClaim.Any())
+                {
+                    foreach (var claim in roleClaim)
+                    {
+                        identity.RemoveClaim(claim);
+                    }
+
+                }
+                identity.AddClaims(roles.Select(r => new Claim("role", r)));
+            }
+
+            
+            var newPrincipal = new System.Security.Claims.ClaimsPrincipal(identity);
         }
     }
 }

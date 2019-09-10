@@ -23,33 +23,35 @@ namespace BookStore.Api.Controllers
             this.userManager = userManager;
         }
 
+        [HttpGet]
         // seed the database with some dummy role and user
         public async Task Get()
         {
-            //await roleManager.CreateAsync(new IdentityRole()
-            //{
-            //    Name = "Owner"
-            //});
-            //await roleManager.CreateAsync(new IdentityRole()
-            //{
-            //    Name = "Manager"
-            //});
-            //await roleManager.CreateAsync(new IdentityRole()
-            //{
-            //    Name = "Customer"
-            //});
+//            await roleManager.CreateAsync(new IdentityRole()
+//            {
+//                Name = "owner"
+//            });
+//            await roleManager.CreateAsync(new IdentityRole()
+//            {
+//                Name = "manager"
+//            });
+//            await roleManager.CreateAsync(new IdentityRole()
+//            {
+//                Name = "customer"
+//            });
 
             var user = await userManager.CreateAsync(new ApplicationUser()
             {
-                Email = "akkubaby@gmail.com",
-                PhoneNumber = "01911946813",
-                UserName = "akkubaby@gmail.com"
+                Email = "akash@gmail.com",
+                PhoneNumber = "01670047320",
+                UserName = "akash@gmail.com"
             }, "Akash&core007");
 
             if (user.Succeeded)
             {
-                var nowInsertedUser = await userManager.FindByEmailAsync("akkubaby@gmail.com");
-                var roleInsert = await userManager.AddToRoleAsync(nowInsertedUser, "Manager");
+
+                var nowInsertedUser = await userManager.FindByEmailAsync("akash@gmail.com");
+                var roleInsert = await userManager.AddToRoleAsync(nowInsertedUser, "owner");
             }
         }
 
@@ -62,7 +64,7 @@ namespace BookStore.Api.Controllers
         }
 
 
-        [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme, Roles = "Owner")]
+        [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme, Roles = "owner")]
         [HttpGet("owner")]
         public string Get2()
         {
@@ -70,7 +72,7 @@ namespace BookStore.Api.Controllers
         }
 
 
-        [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme, Roles = "Manager")]
+        [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme, Roles = "manager")]
         [HttpGet("manager")]
         public string Get3()
         {
