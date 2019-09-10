@@ -84,7 +84,8 @@ namespace BookStore.Api
                     options.UseMvc();
 
                     // Enable the token endpoint (required to use the password flow).
-                    options.EnableTokenEndpoint("/connect/token");
+                    options.EnableAuthorizationEndpoint("/connect/authorize")
+                           .EnableTokenEndpoint("/connect/token");
 
                     // Allow client applications to use the grant_type=password flow also the Allow RefreshToken.
                     options.AllowPasswordFlow().AllowRefreshTokenFlow();

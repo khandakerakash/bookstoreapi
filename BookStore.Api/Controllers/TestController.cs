@@ -41,15 +41,15 @@ namespace BookStore.Api.Controllers
 
             var user = await userManager.CreateAsync(new ApplicationUser()
             {
-                Email = "akash@gmail.com",
-                PhoneNumber = "01670047320",
-                UserName = "akash@gmail.com"
+                Email = "akkubaby@gmail.com",
+                PhoneNumber = "01911946813",
+                UserName = "akkubaby@gmail.com"
             }, "Akash&core007");
 
             if (user.Succeeded)
             {
-                var nowInsertedUser = await userManager.FindByEmailAsync("akash@gmail.com");
-                var roleInsert = await userManager.AddToRoleAsync(nowInsertedUser, "Owner");
+                var nowInsertedUser = await userManager.FindByEmailAsync("akkubaby@gmail.com");
+                var roleInsert = await userManager.AddToRoleAsync(nowInsertedUser, "Manager");
             }
         }
 
