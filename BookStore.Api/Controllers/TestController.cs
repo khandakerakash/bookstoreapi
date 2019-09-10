@@ -23,21 +23,22 @@ namespace BookStore.Api.Controllers
             this.userManager = userManager;
         }
 
+        [HttpGet]
         // seed the database with some dummy role and user
         public async Task Get()
         {
-            //await roleManager.CreateAsync(new IdentityRole()
-            //{
-            //    Name = "Owner"
-            //});
-            //await roleManager.CreateAsync(new IdentityRole()
-            //{
-            //    Name = "Manager"
-            //});
-            //await roleManager.CreateAsync(new IdentityRole()
-            //{
-            //    Name = "Customer"
-            //});
+//            await roleManager.CreateAsync(new IdentityRole()
+//            {
+//                Name = "owner"
+//            });
+//            await roleManager.CreateAsync(new IdentityRole()
+//            {
+//                Name = "manager"
+//            });
+//            await roleManager.CreateAsync(new IdentityRole()
+//            {
+//                Name = "customer"
+//            });
 
             var user = await userManager.CreateAsync(new ApplicationUser()
             {
@@ -49,7 +50,7 @@ namespace BookStore.Api.Controllers
             if (user.Succeeded)
             {
                 var nowInsertedUser = await userManager.FindByEmailAsync("akash@gmail.com");
-                var roleInsert = await userManager.AddToRoleAsync(nowInsertedUser, "Owner");
+                var roleInsert = await userManager.AddToRoleAsync(nowInsertedUser, "owner");
             }
         }
 

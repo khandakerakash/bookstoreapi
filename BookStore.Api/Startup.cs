@@ -2,9 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNet.Security.OAuth.Validation;
 using AspNet.Security.OpenIdConnect.Primitives;
 using BookStore.Api.Contexts;
 using BookStore.Api.Models;
+using BookStore.Api.RequestResponse.Request;
+using BookStore.Api.Services;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -15,6 +20,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 
 namespace BookStore.Api
 {
@@ -30,16 +36,24 @@ namespace BookStore.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddFluentValidation(); ;
+
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+            });
 
             // Register the DbContext on the container
-            var connectionString = Configuration["ConnectionStrings:BookstoreDBConnectionString"];
+
 
             services.AddDbContext<ApplicationDbContext>(
                 o =>
                 {
                     // Configure the context to use Microsoft SQL Server.
-                    o.UseSqlServer(connectionString);
+                    o.UseSqlServer(Configuration.GetConnectionString("BookstoreDBConnectionString"));
 
                     // Register the entity sets needed by OpenIddict.
                     o.UseOpenIddict();
@@ -57,15 +71,14 @@ namespace BookStore.Api
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.AllowedForNewUsers = true;
-            });
-
-            // Register the Identity Service Options.
-            services.Configure<IdentityOptions>(options =>
-            {
+                options.User.RequireUniqueEmail = false;
                 options.ClaimsIdentity.UserNameClaimType = OpenIdConnectConstants.Claims.Name;
                 options.ClaimsIdentity.UserIdClaimType = OpenIdConnectConstants.Claims.Subject;
                 options.ClaimsIdentity.RoleClaimType = OpenIdConnectConstants.Claims.Role;
             });
+
+            // Register the Identity Service Options.
+            
 
             // Register the OpenIddict services.
             services.AddOpenIddict()
@@ -84,7 +97,7 @@ namespace BookStore.Api
                     options.UseMvc();
 
                     // Enable the token endpoint (required to use the password flow).
-                    options.EnableTokenEndpoint("/connect/token");
+                    options.EnableTokenEndpoint("/api/connect/token");
 
                     // Allow client applications to use the grant_type=password flow also the Allow RefreshToken.
                     options.AllowPasswordFlow().AllowRefreshTokenFlow();
@@ -97,6 +110,17 @@ namespace BookStore.Api
                 })
 
                 .AddValidation();
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = OAuthValidationDefaults.AuthenticationScheme;
+            });
+
+
+            services.AddTransient<IValidator<AddCategoryRequest>, AddCategoryRequestValidator>();
+            services.AddTransient<IValidator<RegistrationRequestModel>, RegistrationRequestModelValidator>();
+            services.AddTransient<IValidator<BookRequestModel>, BookRequestModelValidator>();
+            services.AddTransient<ILoginService, LoginService >();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -110,6 +134,16 @@ namespace BookStore.Api
             {
                 app.UseHsts();
             }
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
 
             // Register the `User Authentication` services in Configure Container
             app.UseAuthentication();
