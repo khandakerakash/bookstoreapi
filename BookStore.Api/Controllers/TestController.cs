@@ -51,7 +51,7 @@ namespace BookStore.Api.Controllers
             {
 
                 var nowInsertedUser = await userManager.FindByEmailAsync("akash@gmail.com");
-                var roleInsert = await userManager.AddToRoleAsync(nowInsertedUser, "owner");
+                var roleInsert = await userManager.AddToRoleAsync(nowInsertedUser, "Owner");
             }
         }
 
@@ -64,7 +64,7 @@ namespace BookStore.Api.Controllers
         }
 
 
-        [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme, Roles = "owner")]
+        [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme, Roles = "Owner")]
         [HttpGet("owner")]
         public string Get2()
         {
@@ -72,7 +72,7 @@ namespace BookStore.Api.Controllers
         }
 
 
-        [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme, Roles = "manager")]
+        [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme, Roles = "Manager")]
         [HttpGet("manager")]
         public string Get3()
         {

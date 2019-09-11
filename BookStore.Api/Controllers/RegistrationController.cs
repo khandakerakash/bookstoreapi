@@ -25,7 +25,7 @@ namespace BookStore.Api.Controllers
         [HttpPost]
         public async Task<ActionResult> CustomerRegister(RegistrationRequestModel request)
         {
-            return await RegisterUser(request, "customer");
+            return await RegisterUser(request, "Customer");
             
         }
 
@@ -52,11 +52,11 @@ namespace BookStore.Api.Controllers
             return BadRequest(user.Errors);
         }
 
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = "owner")]
-        [HttpPost("managerregister")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Owner")]
+        [HttpPost("manager-register")]
         public async Task<ActionResult> ManagerRegistration(RegistrationRequestModel request)
         {
-            return await RegisterUser(request, "manager");
+            return await RegisterUser(request, "Manager");
         }
     }
 }

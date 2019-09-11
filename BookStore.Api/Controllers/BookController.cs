@@ -34,7 +34,7 @@ namespace BookStore.Api.Controllers
             return null;
         }
 
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = "manager")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Manager")]
         [HttpPost]
         public async Task<ActionResult> CreateABook([FromForm] BookRequestModel request)
         {

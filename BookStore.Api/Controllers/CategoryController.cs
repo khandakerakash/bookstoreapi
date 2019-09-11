@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookStore.Api.Controllers
 {
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = "owner")]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = "Owner")]
     [Route("api/[controller]")]
     [ApiController]
     public class CategoryController : ControllerBase

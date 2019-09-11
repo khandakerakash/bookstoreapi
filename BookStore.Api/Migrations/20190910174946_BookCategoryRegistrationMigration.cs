@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BookStore.Api.Migrations
 {
-    public partial class BookCategory : Migration
+    public partial class BookCategoryRegistrationMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
