@@ -100,10 +100,14 @@ namespace BookStore.Api
                     //options.EnableAuthorizationEndpoint("/connect/authorize")
                     //       .EnableTokenEndpoint("/connect/token");
 
-                    options.EnableTokenEndpoint("/api/connect/token");
+                    options.EnableAuthorizationEndpoint("/api/connect/authorize")
+                        .EnableLogoutEndpoint("/api/connect/logout")
+                        .EnableTokenEndpoint("/api/connect/token");
 
                     // Allow client applications to use the grant_type=password flow also the Allow RefreshToken.
-                    options.AllowPasswordFlow().AllowRefreshTokenFlow();
+                    options.AllowAuthorizationCodeFlow()
+                        .AllowPasswordFlow()
+                        .AllowRefreshTokenFlow();
 
                     // During development, you can disable the HTTPS requirement.
                     options.DisableHttpsRequirement();
