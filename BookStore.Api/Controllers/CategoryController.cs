@@ -25,10 +25,26 @@ namespace BookStore.Api.Controllers
         }
 
         [AllowAnonymous]
+        // Get api/category
         [HttpGet]
         public async Task<ActionResult> GetAllCategories()
         {
             var result = await _context.Categories.ToListAsync();
+            return Ok(result);
+        }
+
+        [AllowAnonymous]
+        // Get api/category/5
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetACategory(long id)
+        {
+            var result = await _context.Categories.FirstOrDefaultAsync(c => c.CategoryId == id);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
             return Ok(result);
         }
 
@@ -53,24 +69,31 @@ namespace BookStore.Api.Controllers
             return NotFound();
         }
 
-        // Get api/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetACategory(long id)
-        {
-            var result = await _context.Categories.FirstOrDefaultAsync(c => c.CategoryId == id);
-
-            if (result == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(result);
-        }
-
-        // Put api/Category
+        // Put api/Category/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateACategory(long id, [FromBody] Category category)
         {
+            //var result = await _context.Categories.Where(c => c.CategoryId == id).FirstOrDefaultAsync();
+
+            //if (result == null)
+            //{
+            //    return NotFound();
+            //}
+
+            //_context.Update(category);
+
+            //if (_context.SaveChanges()!=0)
+            //{
+            //    return NoContent();
+            //}
+
+            //return BadRequest();
+
+            if (category == null || category.CategoryId != id)
+            {
+                return BadRequest();
+            }
+
             var result = await _context.Categories.Where(c => c.CategoryId == id).FirstOrDefaultAsync();
 
             if (result == null)
@@ -79,13 +102,7 @@ namespace BookStore.Api.Controllers
             }
 
             _context.Update(category);
-
-            if (_context.SaveChanges()!=0)
-            {
-                return NoContent();
-            }
-
-            return BadRequest();
+            return new NoContentResult();
 
         }
 
