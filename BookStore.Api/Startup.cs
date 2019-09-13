@@ -10,6 +10,7 @@ using BookStore.Api.RequestResponse.Request;
 using BookStore.Api.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -21,6 +22,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
 
 namespace BookStore.Api
 {
@@ -36,6 +38,19 @@ namespace BookStore.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            ConnectionMultiplexer Redis =
+                ConnectionMultiplexer.Connect(Configuration.GetValue<string>("Redis:Server"));
+
+            services.AddHangfire(configuration =>
+            {
+                configuration.UseRedisStorage(Redis);
+            });
+            services.AddHangfire(configuration => configuration
+               .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+               .UseSimpleAssemblyNameTypeSerializer()
+               .UseRecommendedSerializerSettings()
+                .UseRedisStorage(Redis));
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddFluentValidation(); ;
@@ -155,6 +170,9 @@ namespace BookStore.Api
             // Register the `User Authentication` services in Configure Container
             app.UseAuthentication();
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseHangfireServer();
+          //  app.UseHangfireDashboard();
             app.UseMvc();
         }
     }

@@ -13,11 +13,14 @@ namespace BookStore.Api.Models
         public decimal Price { get; set; }
         public int Quantity { get; set; }
 
+        public string ImageUrl { get; set; }
+
         public bool IsApproved { get; set; }
 
         public string ApplicationUserId { get; set; }
-
         public ApplicationUser ApplicationUser { get; set; }
 
+        public long CategoryId { get; set; }
+        public Category Category { get; set; }
     }
 }

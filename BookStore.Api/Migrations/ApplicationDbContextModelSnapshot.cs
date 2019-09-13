@@ -15,7 +15,7 @@ namespace BookStore.Api.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.11-servicing-32099")
+                .HasAnnotation("ProductVersion", "2.1.8-servicing-32085")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -80,7 +80,11 @@ namespace BookStore.Api.Migrations
 
                     b.Property<string>("ApplicationUserId");
 
+                    b.Property<long>("CategoryId");
+
                     b.Property<string>("Description");
+
+                    b.Property<string>("ImageUrl");
 
                     b.Property<bool>("IsApproved");
 
@@ -93,6 +97,8 @@ namespace BookStore.Api.Migrations
                     b.HasKey("BookId");
 
                     b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("Books");
                 });
@@ -382,6 +388,11 @@ namespace BookStore.Api.Migrations
                     b.HasOne("BookStore.Api.Models.ApplicationUser", "ApplicationUser")
                         .WithMany("Books")
                         .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("BookStore.Api.Models.Category", "Category")
+                        .WithMany("Books")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
